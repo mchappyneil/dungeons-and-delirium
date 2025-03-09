@@ -1,7 +1,21 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 import requests
 
 app = FastAPI()
+
+origins = [
+    "http://localhost:5173",   # React dev server
+    "http://127.0.0.1:5173",   # Sometimes needed if using 127.0.0.1 instead of localhost
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 OLLAMA_URL = "http://localhost:11434/api/generate"
 
@@ -21,12 +35,11 @@ def get_dungeon_response(action: str):
     
     The player just said: {action}. Introduce an unpredictable but fun plot twist.
     
-    Occasionally include some seriously wacky and/or unbelieveable situations, including real life famous people appearing
-    in the world. For example, Jeff Bezos being a trader NPC - he could for example be willing to trade you items for gold, 
-    or a 30 second advertisement you have to watch entirely (he could cast a spell or something that makes it impossible 
-    for the player to look away).
+    Occasionally include some seriously wacky and/or unbelieveable situations featuring famous
+    people from the real world. These events should be slightly more uncommon than the regular
+    chaotic events.
     
-    These events should be sporadic but not rare, and the point of your response is to make players so dumbfounded that they
-    can only laugh about the situation.
+    The point of your response is to make players so dumbfounded that they can only 
+    laugh about the situation they face.
     """
     return {"response": generate_dnd_response(prompt)}
