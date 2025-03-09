@@ -1,48 +1,50 @@
-import { useState, UseState } from 'react';
+// src/App.jsx
+import React, { useState, useEffect } from 'react';
+import ChatWindow from './components/ChatWindow';
+import ActionForm from './components/ActionForm';
+import { fetchAiResponse } from './services/api';
 import './App.css';
 
 function App() {
-  const [action, setAction] = useState('')
+  // Store all chat messages
   const [messages, setMessages] = useState([]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!action.trim()) return;
+  // Generate or retrieve a session ID to maintain conversation memory
+  const [sessionId, setSessionId] = useState(() => {
+    const saved = localStorage.getItem('dndSessionId');
+    if (saved) {
+      return saved;
+    } else {
+      // If none found, create a new one
+      const newId = crypto.randomUUID();
+      localStorage.setItem('dndSessionId', newId);
+      return newId;
+    }
+  });
 
-    // Add user's action to messages
-    setMessages((prev) => [...prev, {sender: 'user', text: action }]);
+  // Called when the user submits an action
+  const handleSendAction = async (action) => {
+    // Add user action to messages
+    setMessages((prev) => [...prev, { sender: 'user', text: action }]);
 
     try {
-      const res = await fetch(`http://127.0.0.1:8000/dungeon_master/?action=${encodeURIComponent(action)}`)
-      const data = await res.json();
-      setMessages((prev) => [...prev, {sender: 'dm', text: data.response }]);
-    } catch (error) {
-      setMessages((prev) => [...prev, { sender: 'dm', text: 'Error: Could not fetch response from server.'}]);
-      console.error(error);
+      const data = await fetchAiResponse(action, sessionId);
+      setMessages((prev) => [...prev, { sender: 'dm', text: data.response }]);
+
+    } catch (err) {
+      console.error("Error fetching response:", err);
+      setMessages((prev) => [
+        ...prev,
+        { sender: 'dm', text: 'Error: Could not fetch response from server.' },
+      ]);
     }
-    setAction('');
   };
 
   return (
     <div className="container">
       <h1>Dungeons and Delirium</h1>
-      <div className="chatbox">
-        {messages.map((msg, index) => (
-          <div key={index} className={`message ${msg.sender}`}>
-            {msg.text}
-          </div>
-        ))}
-      </div>
-      <form onSubmit={handleSubmit} className='action-form'>
-        <input
-          type="text"
-          value={action}
-          onChange={(e) => setAction(e.target.value)}
-          placeholder="Enter your action..."
-          required
-        />
-        <button type="submit">Send</button>
-      </form>
+      <ChatWindow messages={messages} />
+      <ActionForm onSubmit={handleSendAction} />
     </div>
   );
 }

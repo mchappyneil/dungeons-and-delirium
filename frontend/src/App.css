@@ -9,33 +9,9 @@ h1 {
   text-align: center;
 }
 
-.chatbox {
-  height: 400px;
-  overflow-y: auto;
-  border: 1px solid #ddd;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  background-color: #f9f9f9;
-}
-
-.message {
-  margin-bottom: 1rem;
-  padding: 0.5rem;
-  border-radius: 4px;
-}
-
-.message.user {
-  text-align: right;
-  background-color: #06383f;
-}
-
-.message.dm {
-  text-align: left;
-  background-color: #bd7d1c;
-}
-
 .action-form {
   display: flex;
+  margin-top: 1rem;
 }
 
 .action-form input {
