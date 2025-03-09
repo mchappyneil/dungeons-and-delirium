@@ -1,7 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 import requests
 import uuid # for generating session IDs if needed
+import json
 
 app = FastAPI()
 
@@ -19,6 +20,7 @@ app.add_middleware(
 )
 
 conversations = {}
+player_states = {}
 
 OLLAMA_URL = "http://localhost:11434/api/generate"
 
