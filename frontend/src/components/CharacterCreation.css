@@ -1,0 +1,31 @@
+.character-creation {
+    max-width: 100%;      /* Adjust as needed */
+    margin: 0 auto;       /* Centers the container horizontally */
+    text-align: center;
+    padding: 1rem;
+    margin-top: 15vh;
+    /* margin-left: 3em; */
+  }
+  
+  .class-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;  /* Ensures the cards are centered */
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  
+  .class-card {
+    border: 1px solid #ddd;
+    padding: 1rem;
+    width: 250px;              /* Fixed width for consistent layout */
+    cursor: pointer;
+    border-radius: 8px;
+    background: #131949;
+    transition: transform 0.2s;
+  }
+  
+  .class-card:hover {
+    transform: scale(1.05);
+  }
+  

@@ -1,14 +1,48 @@
+/* src/App.css */
+
 .container {
-  max-width: 600px;
+  max-width: 1200px;     /* Widen the container for two-column layout */
   margin: 2rem auto;
-  padding: 1rem;
   font-family: Arial, sans-serif;
+  margin-top: 10vh;
 }
 
 h1 {
   text-align: center;
+  margin-bottom: 2rem;
 }
 
+/* Main two-column layout */
+.main-content {
+  display: flex;
+  gap: 2rem;            /* Spacing between columns */
+  align-items: flex-start;
+}
+
+/* Left column: chat and input form */
+.left-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Right column: narrower stats panel */
+.right-column {
+  width: 300px;
+}
+
+/* ChatWindow styles remain in ChatWindow.css */
+
+/* Dice-roll prompt */
+.roll-check {
+  background: #f0f0f0;
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 8px;
+  text-align: center;
+}
+
+/* Action form */
 .action-form {
   display: flex;
   margin-top: 1rem;
@@ -24,4 +58,13 @@ h1 {
   padding: 0.5rem 1rem;
   margin-left: 0.5rem;
   font-size: 1rem;
+}
+
+/* Player state panel */
+.player-state {
+  background: #131949;  /* Example: purple background */
+  color: white;
+  padding: 1rem;
+  border-radius: 15px;
+  border: 1px solid aliceblue;
 }
