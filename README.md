@@ -1,6 +1,6 @@
 # Dungeons and Delirium
 
-An AI-powered, Dungeons & Dragons-inspired text adventure featuring an absurd, _chaotic_ AI-powered Dungeon Master. This project uses FastAPI and Python for the backend, and a React (Vite) frontend.
+A Dungeons & Dragons-inspired text adventure featuring an absurd, _chaotic_ AI-powered Dungeon Master. This project uses FastAPI and Python for the backend, and a React (Vite) frontend.
 
 ---
 
