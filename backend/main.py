@@ -1,9 +1,11 @@
-from fastapi import FastAPI, Query
-from fastapi.middleware.cors import CORSMiddleware
-from models.player import create_player, Player
 import requests
 import uuid # for generating session IDs if needed
 import json
+from fastapi import FastAPI, Query
+from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.ext.asyncio import AsyncSession
+from models import SessionLocal, Character # DB Models
+from models.player import create_player, Player # Player subclass factory
 
 app = FastAPI()
 
@@ -25,6 +27,10 @@ player_states = {}
 
 OLLAMA_URL = "http://localhost:11434/api/generate"
 
+async def get_db():
+    async with SessionLocal() as session:
+        yield session
+
 def generate_dnd_response(prompt):
     payload = {
         "model": "mistral",
@@ -34,24 +40,63 @@ def generate_dnd_response(prompt):
     response = requests.post(OLLAMA_URL, json=payload)
     return response.json().get("response", "An error occurred.")
 
-@app.post("/create_character")
-def create_character(chosen_class: str, session_id: str = Query(None)):
+### NEW ENDPOINTS FOR DB-BASED PERSISTENCE
+
+
+@app.post("/create_character/")
+async def chreate_character(name: str, chosen_class: str, db: AsyncSession = Depends(get_db)):
+    """
+    Create a new character using the chosen class, and save to the database.
+    """
     if not session_id:
         session_id = str(uuid.uuid4())
-    if session_id in player_states:
-        return {
-            "error": "Character already exists",
-            "session_id": session_id,
-            "player_state": player_states[session_id].to_dict()
-        }
     try:
         player = create_player(chosen_class)
     except ValueError as e:
-        return {"error": str(e), "session_id": session_id}
+        raise HTTPException(status_code=400, detail=str(e))
     
     player_states[session_id] = player
-    conversations[session_id] = [] # Initialize conversation history
-    return {"session_id": session_id, "player_state": player.to_dict()}
+    conversations[session_id] = []
+    
+    # Save character to DB
+    char_db = Character(
+        name=name,
+        class_type=player.class_name,
+        level=player.level,
+        hit_points=player.hit_points,
+        stats=json.dumps(player.stats)
+    )
+    db.add(char_db)
+    await db.commit()
+    await db.refresh(char_db)
+    
+    return {
+        "session_id": session_id,
+        "player_state": player.to_dict(),
+        "db_id": char_db.id
+    }
+
+@app.get("/load_character/{char_id}")
+async def load_character(char_id: int, db: AsyncSession = Depends(get_db)):
+    """
+    Load character from db using its ID.
+    """
+    character = await db.get(Character, char_id)
+    if not character:
+        raise HTTPException(status_code=404, detail="Could not find character")
+    
+    stats = json.loads(character.stats)
+    
+    return {
+        "id": character.id,
+        "name": character.name,
+        "class_type": character.class_type,
+        "level": character.level,
+        "hit_points": character.hit_points,
+        "stats": stats
+    }
+
+### EXISTING ENDPOINTS (DM, dice checks)
     
     
 @app.get("/dungeon_master/")
