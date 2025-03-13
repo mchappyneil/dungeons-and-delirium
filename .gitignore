@@ -3,6 +3,7 @@ __pycache__/
 
 # Environments
 venv/
+.env
 
 # Dependecy directories
 node_modules/

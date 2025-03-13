@@ -1,7 +1,7 @@
 import requests
 import uuid # for generating session IDs if needed
 import json
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
 from models import SessionLocal, Character # DB Models
