@@ -1,4 +1,3 @@
-// src/App.jsx
 import React, { useState } from 'react';
 import ChatWindow from './components/ChatWindow';
 import ActionForm from './components/ActionForm';
@@ -48,7 +47,6 @@ function App() {
     setPendingCheck(null);
   };
 
-  // Only show character creation if no character is set
   if (!playerState) {
     return <CharacterCreation onCharacterCreated={handleCharacterCreated} />;
   }
@@ -57,7 +55,6 @@ function App() {
     <div className="container">
       <h1>Dungeons and Delirium</h1>
       <div className="main-content">
-        {/* Left column: chat + dice roll + action form */}
         <div className="left-column">
           <ChatWindow messages={messages} />
           {pendingCheck && (
@@ -68,8 +65,6 @@ function App() {
           )}
           <ActionForm onSubmit={handleSendAction} />
         </div>
-
-        {/* Right column: player stats */}
         <div className="right-column">
           <div className="player-state">
             <h2>Player Stats</h2>
@@ -87,11 +82,7 @@ function App() {
               ))}
             </ul>
             <h3>Equipment:</h3>
-            <p>
-              {playerState.equipment.length > 0
-                ? playerState.equipment.join(', ')
-                : 'None'}
-            </p>
+            <p>{playerState.equipment.length > 0 ? playerState.equipment.join(', ') : 'None'}</p>
           </div>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { createCharacter } from "../services/api";
 import "./CharacterCreation.css";
 
@@ -90,36 +90,50 @@ const classes = [
 ];
 
 function CharacterCreation({ onCharacterCreated }) {
-    const handleSelect = async (chosenClass) => {
-      try {
-        const response = await createCharacter(chosenClass);
-        if (response.session_id && response.player_state) {
-          onCharacterCreated(response.session_id, response.player_state);
-        }
-      } catch (error) {
-        console.error("Error creating character: ", error);
+  const [name, setName] = useState("");
+
+  const handleSelect = async (chosenClass) => {
+    if (!name) {
+      alert("Please enter a character name.");
+      return;
+    }
+    try {
+      const response = await createCharacter(name, chosenClass);
+      if (response.session_id && response.player_state) {
+        onCharacterCreated(response.session_id, response.player_state);
       }
-    };
-  
-    return (
-      <div className="character-creation">
-        <h2>Create Your Character</h2>
-        <div className="class-list">
-          {classes.map((cls) => (
-            <div key={cls.name} className="class-card" onClick={() => handleSelect(cls.name)}>
-              <h3>{cls.name}</h3>
-              <p><strong>Armor Class:</strong> {cls.armor_class}</p>
-              <ul>
-                {Object.entries(cls.stats).map(([stat, value]) => (
-                  <li key={stat}><strong>{stat}:</strong> {value}</li>
-                ))}
-              </ul>
-              <p>{cls.description}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
+    } catch (error) {
+      console.error("Error creating character: ", error);
+    }
   };
+
+  return (
+    <div className="character-creation-container">
+      <h2>Create Your Character</h2>
+      <div>
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Enter character name..."
+        />
+      </div>
+      <div className="class-list">
+        {classes.map((cls) => (
+          <div key={cls.name} className="class-card" onClick={() => handleSelect(cls.name)}>
+            <h3>{cls.name}</h3>
+            <p><strong>Armor Class:</strong> {cls.armor_class}</p>
+            <ul>
+              {Object.entries(cls.stats).map(([stat, value]) => (
+                <li key={stat}><strong>{stat}:</strong> {value}</li>
+              ))}
+            </ul>
+            <p>{cls.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default CharacterCreation;
